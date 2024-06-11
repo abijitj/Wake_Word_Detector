@@ -11,7 +11,7 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 import sys 
 
-def manual_record(saved_directory, start_count=0, num_samples=10, duration=2, sample_rate=44100, channels=2):
+def manual_record(saved_directory, start_count=0, num_samples=18, duration=2, sample_rate=44100, channels=2):
     input("Press Enter to start recording...")
     
     for i in range(start_count, start_count + num_samples):

@@ -1,5 +1,5 @@
 """
-File that processing audio samples and saves them as MFCCs to be fed into a 
+File that processes audio samples and saves them as MFCCs to be fed into a 
 wake word detection model. 
 Sources: 
 - https://www.youtube.com/watch?v=NITIefkRae0&t
@@ -9,10 +9,9 @@ Sources:
 import os
 import librosa
 import librosa.display
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
+import constants as const
 
 # Save file paths of train wav files 
 def get_file_paths(path):
@@ -25,10 +24,17 @@ def get_file_paths(path):
             file_paths.append(path + dir)
     return file_paths
 
-file_paths = {
+train_file_paths = {
     0: get_file_paths('./Data/train/neg/'),
     1: get_file_paths('./Data/train/pos/'),
 }
+
+test_file_paths = {
+    0: get_file_paths('./Data/test/neg/'),
+    1: get_file_paths('./Data/test/pos/'),
+}
+
+print("File paths found...")
 
 # Convert each file to MFCC 
 def convert_to_mfcc(file_paths):
@@ -38,19 +44,39 @@ def convert_to_mfcc(file_paths):
     mfccs = []
     for file in file_paths:
         y, sr = librosa.load(file)
-        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=const.NUM_MFCC)
+        mfcc = np.mean(mfcc.T, axis=0) # average the MFCCs over time
         mfccs.append(mfcc)
     return np.array(mfccs)
 
-mfccs = {
-    0: convert_to_mfcc(file_paths[0]),
-    1: convert_to_mfcc(file_paths[1]), 
+train_mfccs = {
+    0: convert_to_mfcc(train_file_paths[0]),
+    1: convert_to_mfcc(train_file_paths[1]), 
 }
 
-all_data = [[mfcc, label] for label, mfccs in mfccs.items() for mfcc in mfccs]
-pd.DataFrame(all_data, columns=['mfcc', 'label']).to_pickle('mfccs.csv')
+print("Train MFCCs calculated...")
 
+test_mfccs = {
+    0: convert_to_mfcc(test_file_paths[0]),
+    1: convert_to_mfcc(test_file_paths[1]), 
+}
 
+print("Test MFCCs calculated...")
 
+train_data = []
+for label, mfccs in train_mfccs.items():
+    for mfcc in mfccs: 
+        train_data.append([mfcc, label])
+
+pd.DataFrame(train_data, columns=['mfcc', 'label']).to_pickle('./Data/train/train_mfccs.csv')
+
+test_data = []
+for label, mfccs in test_mfccs.items():
+    for mfcc in mfccs: 
+        test_data.append([mfcc, label])
+
+pd.DataFrame(test_data, columns=['mfcc', 'label']).to_pickle('./Data/test/test_mfccs.csv')
+
+print("CSVs saved...")
 
 
