@@ -1,5 +1,10 @@
 """"
-Some code used from https://www.youtube.com/watch?v=NITIefkRae0&t=6s
+File to record audio samples using the sounddevice library. The script can be 
+run in two modes: manual and auto.
+Sources: 
+- https://www.youtube.com/watch?v=NITIefkRae0&t=6s
+- https://realpython.com/playing-and-recording-sound-python/
+
 """
 
 import sounddevice as sd 
