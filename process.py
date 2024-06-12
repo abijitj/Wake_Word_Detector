@@ -43,9 +43,11 @@ def convert_to_mfcc(file_paths):
     """
     mfccs = []
     for file in file_paths:
-        y, sr = librosa.load(file)
+        y, sr = librosa.load(file, sr=const.SAMPLE_RATE) # reads as mono channel by default
+        # print("y", y.shape, sr)
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=const.NUM_MFCC)
-        mfcc = np.mean(mfcc.T, axis=0) # average the MFCCs over time
+        # print("mfcc", mfcc.shape)
+        # mfcc = np.mean(mfcc.T, axis=0) # average the MFCCs over time
         mfccs.append(mfcc)
     return np.array(mfccs)
 
