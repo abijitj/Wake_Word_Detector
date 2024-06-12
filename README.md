@@ -9,8 +9,7 @@ Here is the general organization of this repo.
 ```bash
 Wake_Word_Detector/
 ├── README.md
-├── LICENSE
-├── package.json
+├── requirements.txt
 ├── Data/
 │   ├── test/
         ├── neg/
@@ -18,13 +17,15 @@ Wake_Word_Detector/
     ├── train/
         ├── neg/
         ├── pos/
-├── model/
-│   ├── ARISE.pth
-├── record.py
-├── process.py
-├── train.py
-├── interval_listen.py
-├── continuous_listen.py
+├── models/
+    ├── ARISE.pth
+├── src/
+    ├── record.py
+    ├── process.py
+    ├── train.py
+    ├── interval_listen.py
+    ├── continuous_listen.py
+    ├── constants.py
 ```
 The `Data` folder contains all the training and test data for the PyTorch model. 
 
@@ -41,7 +42,7 @@ To fully utilize this codebase, you will need to download all the dependencies s
 You can try out the existing model by running the following command.
 
 ```
-python continuous_listen.py
+python ./src/continuous_listen.py
 ```
 
 This will start an infinite loop (which can be terminated with CTRL+C) where the model tells you if it ever hears "Arise." It might look something like this. 
@@ -54,14 +55,35 @@ This will start an infinite loop (which can be terminated with CTRL+C) where the
 If you would like to record your own data to add to the dataset, you can do so by running the following command. 
 
 ```
-python record.py [auto/manual] [saved-dir] [start-point]
+python ./src/record.py [auto/manual] [saved-dir] [start-point]
 ```
 
 You can select between `auto` or `manual` mode. In auto mode, the computer will continuously record a set number of 2 second sample audio clips. In manual mode, you will be asked to press Enter to initiate the recording of each 2 second sample. 
 
-Then, you can specify where to save these recordings in `[saved-dir]`. Finally, `start-point` tells the computer how to start numbering the names of these audio files. For example, if it's 5, then your recordings will be saved as `5.wav`, `6.wav`, `7.wav` and so on. 
+Then, you can specify where to save these recordings in `[saved-dir]`. To make the data processing step easier, it would be beneficial if you can save these recordings into the `./Data/train` or `./Data/test` directories in the appropriately labelled negative or positive directoy. 
+
+Finally, `start-point` tells the program how to start numbering the names of these audio files. For example, if it's 5, then your recordings will be saved as `5.wav`, `6.wav`, `7.wav` and so on. 
+
 
 ### Data Processing 
 
+Run the following command to process the data in the `./Data/train/` and `./Data/test/` directories. 
 
+```
+python ./src/process.py 
+```
 
+All the data will be labelled and saved as .csv files within the test or train directories (one for train, one for test). Note, these files are not human-readable because they have been pickled in order to be processed faster. However, a human-readable csv file is also saved in `./Data/train/` called `train_mfccs2.csv` for reference. 
+
+### Training 
+
+In order to train the model using the data in `./Data/`, simply run the following command. 
+
+```
+python ./src/train.py ["save"] [model-name]
+```
+
+Please note that the last two optional arguments can be used if you want to save the model into the `./models/` directory. An example use of this would look ike: `python ./src/train.py save ARISE`. 
+
+### Running Saved Model 
+Finally, in order to run a new saved model, go into the `./src/continuous_listen.py` file and change the file path in the `torch.load()` function to the file path of the saved model that you would like to run. Then, run the program. 
