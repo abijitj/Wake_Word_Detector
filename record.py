@@ -21,7 +21,7 @@ def manual_record(saved_directory, start_count=0, num_samples=32, duration=2, sa
         input("Press Enter to record next sample...")
 
 def auto_record(saved_directory, start_count=0, num_samples=200, duration=2, sample_rate=44100, channels=2):
-    print("Starting background recording...")
+    print("Starting automated recording...")
     count = 1
     for i in range(start_count, start_count + num_samples):
         recording = sd.rec(sample_rate * duration, samplerate=sample_rate, channels=channels)
@@ -29,7 +29,7 @@ def auto_record(saved_directory, start_count=0, num_samples=200, duration=2, sam
         sd.wait()
         write(saved_directory + str(i) + ".wav", sample_rate, recording)
         print(f"Sample {saved_directory + str(i)}.wav recorded...")
-    print("Background recordings are complete. Exiting...")
+    print("Automated recordings are complete. Exiting...")
 
 if sys.argv[1] == "manual":
     manual_record(sys.argv[2], start_count=int(sys.argv[3]))

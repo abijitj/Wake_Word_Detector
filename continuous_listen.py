@@ -5,8 +5,6 @@ Sources:
 - https://docs.python.org/3/library/threading.html
 """
 
-
-
 import threading 
 import sounddevice as sd 
 from scipy.io.wavfile import write
@@ -44,10 +42,9 @@ def listen(stop_event):
         sd.wait()    
         audio_mono = librosa.to_mono(recording.T)
         mfcc = librosa.feature.mfcc(y=audio_mono, sr=const.SAMPLE_RATE, n_mfcc=const.NUM_MFCC)
-        # detect(mfcc)
         detect_thread = threading.Thread(target=detect, args=(mfcc,))
         detect_thread.start()
-        # time.sleep(0.001)
+
 
 def detect(mfcc): 
     """

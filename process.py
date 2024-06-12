@@ -43,10 +43,10 @@ def convert_to_mfcc(file_paths):
     """
     mfccs = []
     for file in file_paths:
-        y, sr = librosa.load(file, sr=const.SAMPLE_RATE) # reads as mono channel by default
+        y, sr = librosa.load(file, sr=const.SAMPLE_RATE) # loads as mono channel by default
         # print("y", y.shape, sr)
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=const.NUM_MFCC)
-        # print("mfcc", mfcc.shape)
+        # print("mfcc", mfcc.shape) # (20, 173)
         # mfcc = np.mean(mfcc.T, axis=0) # average the MFCCs over time
         mfccs.append(mfcc)
     return np.array(mfccs)
@@ -71,6 +71,7 @@ for label, mfccs in train_mfccs.items():
         train_data.append([mfcc, label])
 
 pd.DataFrame(train_data, columns=['mfcc', 'label']).to_pickle('./Data/train/train_mfccs.csv')
+# pd.DataFrame(train_data, columns=['mfcc', 'label']).to_csv('./Data/train/train_mfccs2.csv')
 
 test_data = []
 for label, mfccs in test_mfccs.items():
