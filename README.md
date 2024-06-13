@@ -1,4 +1,4 @@
-# Wake Word Detector - Arise
+# Wake Word Detector
 
 This is a wake word detector that recognizes when a speaker says the word "Arise" in English. 
 
@@ -73,7 +73,7 @@ Run the following command to process the data in the `./Data/train/` and `./Data
 python ./src/process.py 
 ```
 
-All the data will be labelled and saved as .csv files within the test or train directories (one for train, one for test). Note, these files are not human-readable because they have been pickled in order to be processed faster. However, a human-readable csv file is also saved in `./Data/train/` called `train_mfccs2.csv` for reference. 
+All the data will be labelled and saved as .csv files within the test or train directories (one for train, one for test). Note, these files are not human-readable because they have been pickled in order to be processed faster. However, an example human-readable csv file already exists in `./Data/train/` called `train_mfccs2.csv`, if you would like to look at how the data is saved. 
 
 ### Training 
 
@@ -86,4 +86,18 @@ python ./src/train.py ["save"] [model-name]
 Please note that the last two optional arguments can be used if you want to save the model into the `./models/` directory. An example use of this would look ike: `python ./src/train.py save ARISE`. 
 
 ### Running Saved Model 
-Finally, in order to run a new saved model, go into the `./src/continuous_listen.py` file and change the file path in the `torch.load()` function to the file path of the saved model that you would like to run. Then, run the program. 
+Finally, you can run your model with the following command. 
+
+```
+python src/continuous_listen.py [saved-model-dir]
+```
+The last argument specifies where your saved model is. 
+
+### Further customization
+For further customization, simply editing the file paths within `record.py`, `process.py` and `train.py` will get you very far. 
+
+## References
+
+- https://github.com/pritishmishra703/WakeWordDetection
+- [PyTorch docs](https://pytorch.org/docs/stable/index.html)
+- [Librosa docs](https://librosa.org/doc/latest/index.html) 

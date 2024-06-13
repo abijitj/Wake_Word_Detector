@@ -11,8 +11,10 @@ from scipy.io.wavfile import write
 import librosa
 import constants as const
 import torch 
+import numpy as np
 from train import WakeWord
 import time 
+import sys
 
 
 dropout = 0.5
@@ -21,8 +23,14 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # Load saved model 
 print("Loading model...")
 start_time = time.time()
-model = WakeWord(const.NUM_MFCC * const.MFCC_Y, dropout_rate=dropout)
-model.load_state_dict(torch.load("./model/ARISE.pth"))
+# model = WakeWord(const.NUM_MFCC * const.MFCC_Y, dropout_rate=dropout)
+model = WakeWord(const.NUM_MFCC, dropout_rate=dropout)
+
+if len(sys.argv) < 2: 
+    print("Please provide the path to the saved model.")
+    exit() 
+
+model.load_state_dict(torch.load(sys.argv[1]))
 model.eval()
 model.to(device)
 print("Loaded model in ", time.time() - start_time, "s")
@@ -40,6 +48,7 @@ def listen(stop_event):
         sd.wait()    
         audio_mono = librosa.to_mono(recording.T)
         mfcc = librosa.feature.mfcc(y=audio_mono, sr=const.SAMPLE_RATE, n_mfcc=const.NUM_MFCC)
+        mfcc = np.mean(mfcc.T, axis=0)
         detect_thread = threading.Thread(target=detect, args=(mfcc,))
         detect_thread.start()
 

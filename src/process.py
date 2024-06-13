@@ -11,6 +11,11 @@ import librosa
 import numpy as np
 import pandas as pd
 import constants as const
+import sys
+
+if len(sys.argv) < 2: 
+    print('Please provide the wake word to process: "arise" or "awaken"')
+    exit()
 
 # Save file paths of train wav files 
 def get_file_paths(path):
@@ -23,15 +28,29 @@ def get_file_paths(path):
             file_paths.append(path + dir)
     return file_paths
 
-train_file_paths = {
-    0: get_file_paths('./Data/train/neg/'),
-    1: get_file_paths('./Data/train/pos/'),
-}
+if sys.argv[1] == 'arise':
+    train_file_paths = {
+        0: get_file_paths('./Data/train/neg/'),
+        1: get_file_paths('./Data/train/pos-arise/'),
+    }
 
-test_file_paths = {
-    0: get_file_paths('./Data/test/neg/'),
-    1: get_file_paths('./Data/test/pos/'),
-}
+    test_file_paths = {
+        0: get_file_paths('./Data/test/neg/'),
+        1: get_file_paths('./Data/test/pos-arise/'),
+    }
+elif sys.argv[1] == 'awaken':
+    train_file_paths = {
+        0: get_file_paths('./Data/train/neg/'),
+        1: get_file_paths('./Data/train/pos-awaken/'),
+    }
+
+    test_file_paths = {
+        0: get_file_paths('./Data/test/neg/'),
+        1: get_file_paths('./Data/test/pos-awaken/'),
+    }
+else: 
+    print('Please provide a valid wake word: "arise" or "awaken"')
+    exit()
 
 print("File paths found...")
 
@@ -50,6 +69,7 @@ def convert_to_mfcc(file_paths):
         mfccs.append(mfcc)
     return np.array(mfccs)
 
+
 train_mfccs = {
     0: convert_to_mfcc(train_file_paths[0]),
     1: convert_to_mfcc(train_file_paths[1]), 
@@ -61,6 +81,7 @@ test_mfccs = {
     0: convert_to_mfcc(test_file_paths[0]),
     1: convert_to_mfcc(test_file_paths[1]), 
 }
+
 
 print("Test MFCCs calculated...")
 

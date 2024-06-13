@@ -1,6 +1,5 @@
 """
-File that trains a wake word detection model that detects the word 
-"Arise" using MFCCs as input. 
+Trains a wake word detection model that detects the word using MFCCs as input. 
 Sources: 
 - https://pytorch.org/tutorials/beginner/basics/data_tutorial.html#creating-a-custom-dataset-for-your-files
 - https://pytorch.org/docs/stable/generated/torch.nn.BCELoss.html
@@ -18,6 +17,7 @@ import statistics as stats
 import sys
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f"Using {device} for training...")
 
 """
 Hyperparameters
@@ -78,8 +78,8 @@ class WakeWord(nn.Module):
         # self.flatten = nn.Flatten() # Flatten 2D input MFCCs to 1D
         self.l1 = nn.Linear(in_dim, 256)
         self.d1 = nn.Dropout(dropout_rate)
-        # self.l2 = nn.Linear(256, 256)
-        # self.d2 = nn.Dropout(dropout_rate)
+        self.l2 = nn.Linear(256, 256)
+        self.d2 = nn.Dropout(dropout_rate)
         # self.l3 = nn.Linear(256, 100)
         # self.d3 = nn.Dropout(dropout_rate)
         self.l4 = nn.Linear(256, 1) # one output for binary classification
@@ -87,7 +87,7 @@ class WakeWord(nn.Module):
     def forward(self, x):
         # x = self.flatten(x)
         x = self.d1(F.relu(self.l1(x)))
-        # x = self.d2(F.relu(self.l2(x)))
+        x = self.d2(F.relu(self.l2(x)))
         # x = self.d3(F.relu(self.l3(x)))
         x = torch.sigmoid(self.l4(x))
         return x
@@ -130,6 +130,14 @@ def __main__():
             loss.backward() # backward pass / backpropogation
             optimizer.step() # update weights
 
+    train_loss, train_acc = evaluate(model, train_dataloader, criterion)
+    test_loss, test_acc = evaluate(model, test_dataloader, criterion)
+    print("Epoch: ", epochs, 
+        "Training Loss: ", train_loss, 
+        "Training Accuracy: ", train_acc,
+        "Test Loss: ", test_loss,
+        "Test Accuracy: ", test_acc)
+
     # Number of parameters
     num_params = sum(p.numel() for p in model.parameters())
     print("Number of parameters: ", num_params)
@@ -140,6 +148,7 @@ def __main__():
             print("Please provide a model name to save.")
             return
         torch.save(model.state_dict(), "./models/" + sys.argv[2] + ".pth")
+        print(f"{sys.argv[2]}.pth model saved...")
 
 if __name__ == "__main__":
     __main__()
