@@ -5,7 +5,7 @@ trained to recognize the word "Arise" or the word "Awaken" in English.
 
 ## File Organization
 
-Here is the general organization of this repo. 
+Here is the general organization of the most important files in this repo. 
 
 ```bash
 Wake_Word_Detector/
